@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --custom-bg: #494368;
+  --custom-1: #ceec97;
+  --custom-2: #f4b393;
+  --custom-3: #fc60a8;
+  --custom-4: #7a28cb;
+  --custom-5: #022b3a;
+  --custom-6: #ff0000;
+  --custom-7: #1f7a8c;
+}
+
 /*
 :root {
   --foreground-rgb: 0, 0, 0;

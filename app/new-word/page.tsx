@@ -4,9 +4,9 @@ import { useState } from "react";
 import { Vocabulary } from "../types/vocabulary";
 
 const NewWord = () => {
-  const [vocabulary, setVocabulary] = useState<Vocabulary>({
+  const [vocabularies, setVocabularies] = useState<Vocabulary[]>([]);
+  const [vocabulary, setVocabulary] = useState<Omit<Vocabulary, "wordId">>({
     word: "",
-    wordId: "",
     meanings: { isFirstMeaning: true, turkishMeanings: [], sideNotes: [] },
     englishExpression: "",
     exampleSentences: [],
@@ -16,16 +16,36 @@ const NewWord = () => {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setVocabulary(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleMeaningsChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+    type: "turkishMeanings" | "sideNotes"
+  ) => {
+    const { value } = e.target;
+    setVocabulary(prev => ({
+      ...prev,
+      meanings: {
+        ...prev.meanings,
+        [type]: value.split("/"),
+      },
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Add logic to save the vocabulary
-    console.log(vocabulary);
+    const newVocabulary: Vocabulary = {
+      ...vocabulary,
+      wordId: (vocabularies.length + 1).toString(),
+    };
+    setVocabularies(prev => [...prev, newVocabulary]);
+    console.log(newVocabulary);
   };
 
   return (
@@ -42,20 +62,66 @@ const NewWord = () => {
         />
         <textarea
           name="turkishMeanings"
-          placeholder="Turkish Meanings"
-          value={vocabulary.meanings.turkishMeanings.join(", ")}
+          placeholder="Turkish Meanings (slash separated)"
+          value={vocabulary.meanings.turkishMeanings.join("/")}
+          onChange={e => handleMeaningsChange(e, "turkishMeanings")}
+          className="w-full px-4 py-2 border rounded"
+        />
+        <textarea
+          name="sideNotes"
+          placeholder="Side Notes (slash separated)"
+          value={vocabulary.meanings.sideNotes.join("/")}
+          onChange={e => handleMeaningsChange(e, "sideNotes")}
+          className="w-full px-4 py-2 border rounded"
+        />
+        <input
+          type="text"
+          name="englishExpression"
+          placeholder="English Expression"
+          value={vocabulary.englishExpression}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded"
+        />
+        <textarea
+          name="exampleSentences"
+          placeholder="Example Sentences (slash separated)"
+          value={vocabulary.exampleSentences.join("/")}
           onChange={e =>
             setVocabulary(prev => ({
               ...prev,
-              meanings: {
-                ...prev.meanings,
-                turkishMeanings: e.target.value.split(", "),
-              },
+              exampleSentences: e.target.value.split("/"),
             }))
           }
           className="w-full px-4 py-2 border rounded"
         />
-        {/* Add more fields for other properties */}
+        <input
+          type="text"
+          name="imageUrl"
+          placeholder="Image URL"
+          value={vocabulary.imageUrl}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded"
+        />
+        <input
+          type="text"
+          name="type"
+          placeholder="Type"
+          value={vocabulary.type}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded"
+        />
+        <textarea
+          name="tags"
+          placeholder="Tags (slash separated)"
+          value={vocabulary.tags.join("/")}
+          onChange={e =>
+            setVocabulary(prev => ({
+              ...prev,
+              tags: e.target.value.split("/"),
+            }))
+          }
+          className="w-full px-4 py-2 border rounded"
+        />
         <button
           type="submit"
           className="px-4 py-2 bg-blue-500 text-white rounded"
