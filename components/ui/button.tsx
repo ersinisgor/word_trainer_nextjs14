@@ -24,10 +24,8 @@ const buttonVariants = cva(
           "bg-custom-2 text-custom-5 font-semibold hover:bg-custom-6 hover:text-custom-3",
         customBig2:
           "bg-custom-3 text-custom-5 font-semibold hover:bg-custom-6 hover:text-custom-3",
-        // customBig8:
-        //   "bg-custom-6 text-custom-3 font-semibold hover:bg-custom-4 hover:text-custom-3",
         customBig3:
-          "bg-custom-7 text-custom-1 font-semibold hover:bg-custom-6 hover:text-custom-3",
+          "bg-custom-7 text-custom-2 font-semibold hover:bg-custom-6 hover:text-custom-3",
         customBig4:
           "bg-custom-8 text-custom-3 font-semibold hover:bg-custom-6 hover:text-custom-3",
         customBig5:

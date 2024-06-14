@@ -168,11 +168,6 @@ const NewWord = () => {
           <Button type="submit" variant={"customSm1"}>
             Save
           </Button>
-          {/* <Button asChild variant={"customSm2"}>
-            <Link href={"/"}>
-              <FaHome />
-            </Link>
-          </Button> */}
           <Link href="/" passHref>
             <Button variant={"customSm1"}>
               <FaHome />

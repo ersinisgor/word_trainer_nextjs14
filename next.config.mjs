@@ -10,6 +10,9 @@ const nextConfig = {
         pathname: "/**",
       },
     ],
+    domains: [
+      "https://unsplash.com/photos/a-table-topped-with-lots-of-dishes-and-utensils-u34GMeTQ4X0",
+    ],
   },
 };
 
