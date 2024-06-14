@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { vocabularies } from "../data/vocabularies";
+import { vocabularies } from "../../data/vocabularies";
 import Image from "next/image";
 
 const PracticeWord = () => {

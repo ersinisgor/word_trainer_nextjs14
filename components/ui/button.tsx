@@ -21,19 +21,19 @@ const buttonVariants = cva(
           "hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50",
         link: "text-slate-900 underline-offset-4 hover:underline dark:text-slate-50",
         customBig1:
-          "bg-custom-2 text-custom-5 font-semibold hover:bg-custom-6 hover:text-custom-3",
+          "bg-custom-2 text-custom-5 text-wrap font-semibold hover:bg-custom-6 hover:text-custom-3",
         customBig2:
-          "bg-custom-3 text-custom-5 font-semibold hover:bg-custom-6 hover:text-custom-3",
+          "bg-custom-3 text-custom-5 text-wrap font-semibold hover:bg-custom-6 hover:text-custom-3",
         customBig3:
-          "bg-custom-7 text-custom-2 font-semibold hover:bg-custom-6 hover:text-custom-3",
+          "bg-custom-7 text-custom-2 text-wrap font-semibold hover:bg-custom-6 hover:text-custom-3",
         customBig4:
-          "bg-custom-8 text-custom-3 font-semibold hover:bg-custom-6 hover:text-custom-3",
+          "bg-custom-8 text-custom-3 text-wrap font-semibold hover:bg-custom-6 hover:text-custom-3",
         customBig5:
-          "bg-custom-9 text-custom-1 font-semibold hover:bg-custom-6 hover:text-custom-3",
+          "bg-custom-9 text-custom-1 text-wrap font-semibold hover:bg-custom-6 hover:text-custom-3",
         customBig6:
-          "bg-custom-4 text-custom-5 font-semibold hover:bg-custom-6 hover:text-custom-3",
+          "bg-custom-4 text-custom-5 text-wrap font-semibold hover:bg-custom-6 hover:text-custom-3",
         customBig7:
-          "bg-custom-5 text-custom-3 font-semibold hover:bg-custom-6 hover:text-custom-3",
+          "bg-custom-5 text-custom-3 text-wrap font-semibold hover:bg-custom-6 hover:text-custom-3",
         customSm1:
           "px-4 py-2 bg-custom-3 text-custom-6 rounded hover:bg-custom-6 hover:text-custom-3 font-medium",
       },

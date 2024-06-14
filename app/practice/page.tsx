@@ -1,26 +1,27 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { FaHome } from "react-icons/fa";
 
-export default function Home() {
+export default function PracticeWord() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-4xl font-bold mb-8 text-custom-9">
-        Vocabulary Practice
-      </h1>
+      <h1 className="text-4xl font-bold mb-8 text-custom-9">Practice For</h1>
       <div className="flex  items-center gap-8">
-        <Link href="/new-word" passHref>
+        <Link href="/practice/english" passHref>
           <Button variant={"customBig1"} size={"big1"}>
-            New Word
+            English
           </Button>
         </Link>
-        <Link href="/practice" passHref>
+        <Link href="/practice/turkish" passHref>
           <Button variant={"customBig7"} size={"big1"}>
-            Practice
+            Turkish
           </Button>
         </Link>
-        <Link href="/vocabulary-list" passHref>
-          <Button variant={"customBig3"} size={"big1"}>
-            Word List
+      </div>
+      <div className="flex space-x-4 mt-8">
+        <Link href="/" passHref>
+          <Button variant={"customSm1"}>
+            <FaHome />
           </Button>
         </Link>
       </div>
