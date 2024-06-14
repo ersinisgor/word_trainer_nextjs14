@@ -50,9 +50,6 @@ const VocabularyDetail = ({ params }: { params: { wordId: string } }) => {
       </h1>
       <ul className="w-full max-w-md space-y-4">
         <li className="p-4 border rounded">
-          <h2 className="text-2xl font-bold text-custom-7 mb-3">
-            {vocabulary.word}
-          </h2>
           <p className="text-xl text-custom-9">
             Meanings: {vocabulary.meanings.turkishMeanings.join(" / ")}
           </p>
@@ -88,6 +85,9 @@ const VocabularyDetail = ({ params }: { params: { wordId: string } }) => {
           <Button variant={"customSm1"}>
             <FaHome />
           </Button>
+        </Link>
+        <Link href={`/update-vocabulary/${vocabulary.wordId}`} passHref>
+          <Button variant={"customSm1"}>Edit</Button>
         </Link>
       </div>
     </div>
