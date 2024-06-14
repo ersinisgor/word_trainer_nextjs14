@@ -25,7 +25,14 @@ const VocabularyList = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
+    <div className="flex flex-col items-center justify-center min-h-screen py-2 px-24 ">
+      <div className="self-end mb-10">
+        <Link href="/">
+          <Button variant={"customSmIcon"}>
+            <FaHome />
+          </Button>
+        </Link>
+      </div>
       <h1 className="text-4xl font-bold mb-8 text-custom-4">Vocabulary List</h1>
       <ul className="w-full max-w-md space-y-4">
         {vocabularies.map(vocabulary => (
@@ -49,13 +56,13 @@ const VocabularyList = () => {
           </li>
         ))}
       </ul>
-      <div className="mt-8">
+      {/* <div className="mt-8">
         <Link href="/">
           <Button variant={"customSm1"}>
             <FaHome />
           </Button>
         </Link>
-      </div>
+      </div> */}
     </div>
   );
 };

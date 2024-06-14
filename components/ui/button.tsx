@@ -36,6 +36,8 @@ const buttonVariants = cva(
           "bg-custom-5 text-custom-3 text-wrap font-semibold hover:bg-custom-6 hover:text-custom-3",
         customSm1:
           "px-4 py-2 bg-custom-3 text-custom-6 rounded hover:bg-custom-6 hover:text-custom-3 font-medium",
+        customSmIcon:
+          "text-xl bg-custom-3 text-custom-6 rounded hover:bg-custom-6 hover:text-custom-3 font-medium",
       },
       size: {
         default: "h-9 px-4 py-2",

@@ -5,6 +5,13 @@ import { FaHome } from "react-icons/fa";
 export default function PracticeWord() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
+      <div className="self-end mb-10">
+        <Link href="/">
+          <Button variant={"customSmIcon"}>
+            <FaHome />
+          </Button>
+        </Link>
+      </div>
       <h1 className="text-4xl font-bold mb-8 text-custom-9">Practice For</h1>
       <div className="flex  items-center gap-8">
         <Link href="/practice/english" passHref>
@@ -15,13 +22,6 @@ export default function PracticeWord() {
         <Link href="/practice/turkish" passHref>
           <Button variant={"customBig7"} size={"big1"}>
             Turkish
-          </Button>
-        </Link>
-      </div>
-      <div className="flex space-x-4 mt-8">
-        <Link href="/" passHref>
-          <Button variant={"customSm1"}>
-            <FaHome />
           </Button>
         </Link>
       </div>

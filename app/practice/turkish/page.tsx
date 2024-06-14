@@ -1,9 +1,17 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { FaHome } from "react-icons/fa";
 
 export default function TurkishPractice() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
+      <div className="self-end mb-10">
+        <Link href="/">
+          <Button variant={"customSmIcon"}>
+            <FaHome />
+          </Button>
+        </Link>
+      </div>
       <h1 className="text-4xl font-bold mb-8 text-custom-9">
         Turkish Practices
       </h1>
