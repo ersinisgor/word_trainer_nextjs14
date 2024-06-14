@@ -3,14 +3,15 @@
 @tailwind utilities;
 
 :root {
-  --custom-bg: #494368;
-  --custom-1: #ceec97;
-  --custom-2: #f4b393;
-  --custom-3: #fc60a8;
-  --custom-4: #7a28cb;
-  --custom-5: #022b3a;
-  --custom-6: #ff0000;
-  --custom-7: #1f7a8c;
+  --custom-1: #494368;
+  --custom-2: #ceec97;
+  --custom-3: #f4b393;
+  --custom-4: #fc60a8;
+  --custom-5: #7a28cb;
+  --custom-6: #022b3a;
+  --custom-7: #ff0000;
+  --custom-8: #1f7a8c;
+  --custom-9: #fdb555;
 }
 
 /*

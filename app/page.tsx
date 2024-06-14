@@ -1,23 +1,27 @@
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-4xl font-bold mb-8 text-white">
+      <h1 className="text-4xl font-bold mb-8 text-custom-9">
         Vocabulary Practice
       </h1>
       <div className="flex  items-center gap-8">
-        <Link
-          href="/new-word"
-          className="flex items-center justify-center w-40 h-60 p-1 bg-custom-2 text-custom-5 text-xl rounded-xl text-center font-semibold hover:bg-custom-4 hover:text-custom-3"
-        >
-          New Word
+        <Link href="/new-word" passHref>
+          <Button variant={"customBig1"} size={"big1"}>
+            New Word
+          </Button>
         </Link>
-        <Link
-          href="/practice-word"
-          className="flex items-center justify-center w-40 h-60 p-1 bg-custom-3 text-custom-5 font-semibold text-xl rounded-xl text-center hover:bg-custom-4 hover:text-custom-3"
-        >
-          Practice
+        <Link href="/practice-word" passHref>
+          <Button variant={"customBig7"} size={"big1"}>
+            Practice
+          </Button>
+        </Link>
+        <Link href="/vocabulary-list" passHref>
+          <Button variant={"customBig3"} size={"big1"}>
+            Word List
+          </Button>
         </Link>
       </div>
     </main>
