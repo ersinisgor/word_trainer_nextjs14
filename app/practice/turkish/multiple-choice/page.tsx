@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FaHome } from "react-icons/fa";
+import { MdTipsAndUpdates } from "react-icons/md";
 
 interface Vocabulary {
   wordId: string;
@@ -33,6 +34,7 @@ const MultipleChoice = () => {
   const [options, setOptions] = useState<string[]>([]);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [showHint, setShowHint] = useState<boolean>(false);
 
   const shuffleArray = (array: any[]) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -59,6 +61,7 @@ const MultipleChoice = () => {
     setOptions(shuffledOptions);
     setSelectedOption(null);
     setIsCorrect(null);
+    setShowHint(false);
   }, []);
 
   useEffect(() => {
@@ -73,6 +76,10 @@ const MultipleChoice = () => {
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
     setIsCorrect(option === currentWord?.meanings.turkishMeanings[0]);
+  };
+
+  const handleHintClick = () => {
+    setShowHint(true);
   };
 
   return (
@@ -102,9 +109,12 @@ const MultipleChoice = () => {
                 className={`${
                   selectedOption === option
                     ? isCorrect
-                      ? "bg-green-500"
-                      : "bg-red-500"
-                    : "bg-custom-3"
+                      ? "bg-custom-2"
+                      : "bg-custom-7"
+                    : showHint &&
+                      option === currentWord?.meanings.turkishMeanings[0]
+                    ? "bg-custom-2"
+                    : "bg-custom-1 text-custom-2"
                 }`}
                 onClick={() => handleOptionClick(option)}
               >
@@ -120,9 +130,12 @@ const MultipleChoice = () => {
                 className={`${
                   selectedOption === option
                     ? isCorrect
-                      ? "bg-green-500"
-                      : "bg-red-500"
-                    : "bg-custom-3"
+                      ? "bg-custom-2"
+                      : "bg-custom-7"
+                    : showHint &&
+                      option === currentWord?.meanings.turkishMeanings[0]
+                    ? "bg-custom-2"
+                    : "bg-custom-1 text-custom-2"
                 }`}
                 onClick={() => handleOptionClick(option)}
               >
@@ -130,16 +143,20 @@ const MultipleChoice = () => {
               </Button>
             ))}
           </div>
-          {isCorrect !== null && (
-            <Button
-              variant={"customSm1"}
-              onClick={() => setNewQuestion(vocabularies)}
-            >
-              Next Question
-            </Button>
-          )}
         </CardFooter>
       </Card>
+      <div className="flex gap-4 mt-10">
+        <Button variant={"customSm1"} onClick={handleHintClick}>
+          <MdTipsAndUpdates className="mr-2" />
+          Hint
+        </Button>
+        <Button
+          variant={"customSm1"}
+          onClick={() => setNewQuestion(vocabularies)}
+        >
+          Next Question
+        </Button>
+      </div>
     </main>
   );
 };

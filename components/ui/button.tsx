@@ -37,7 +37,9 @@ const buttonVariants = cva(
         customSm1:
           "px-4 py-2 bg-custom-3 text-custom-6 rounded hover:bg-custom-6 hover:text-custom-3 font-medium",
         customSm2:
-          "px-4 py-2 bg-custom-3 text-custom-6 rounded hover:bg-custom-5 hover:text-custom-9 font-medium",
+          "px-4 py-2 bg-custom-2 text-custom-6 rounded hover:bg-custom-5 hover:text-custom-9 font-medium",
+        customSm3:
+          "px-4 py-2 bg-custom-2 text-custom-6 rounded hover:bg-custom-5 hover:text-custom-9 font-medium",
         customSmIcon:
           "text-xl bg-custom-3 text-custom-6 rounded hover:bg-custom-6 hover:text-custom-3 font-medium",
       },
