@@ -75,7 +75,14 @@ const MultipleChoice = () => {
 
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
-    setIsCorrect(option === currentWord?.meanings.turkishMeanings[0]);
+    const correct = option === currentWord?.meanings.turkishMeanings[0];
+    setIsCorrect(correct);
+
+    if (correct) {
+      setTimeout(() => {
+        setNewQuestion(vocabularies);
+      }, 1000); // Change question after 1 second
+    }
   };
 
   const handleHintClick = () => {
