@@ -8,6 +8,7 @@ import { FaHome, FaTimes } from "react-icons/fa";
 
 const VocabularyList = () => {
   const [vocabularies, setVocabularies] = useState<Vocabulary[]>([]);
+  console.log(vocabularies);
 
   useEffect(() => {
     const storedVocabularies = localStorage.getItem("vocabularies");

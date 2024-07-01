@@ -1,17 +1,22 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FaHome } from "react-icons/fa";
 import { MdTipsAndUpdates } from "react-icons/md";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface Vocabulary {
   wordId: string;
@@ -35,6 +40,8 @@ const MultipleChoice = () => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showHint, setShowHint] = useState<boolean>(false);
+  const [correctCount, setCorrectCount] = useState<number>(0);
+  const [askedWords, setAskedWords] = useState<Set<string>>(new Set());
 
   const shuffleArray = (array: any[]) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -44,25 +51,38 @@ const MultipleChoice = () => {
     return array;
   };
 
-  const setNewQuestion = useCallback((vocabularies: Vocabulary[]) => {
-    const randomWord =
-      vocabularies[Math.floor(Math.random() * vocabularies.length)];
-    const correctMeaning = randomWord.meanings.turkishMeanings[0];
-    const incorrectMeanings = vocabularies
-      .filter(v => v.wordId !== randomWord.wordId)
-      .map(v => v.meanings.turkishMeanings[0]);
+  const setNewQuestion = useCallback(
+    (vocabularies: Vocabulary[]) => {
+      console.log("Setting new question");
+      const remainingVocabularies = vocabularies.filter(
+        v => !askedWords.has(v.wordId)
+      );
+      if (remainingVocabularies.length === 0) {
+        alert("You've gone through all the words!");
+        return;
+      }
+      const randomWord =
+        remainingVocabularies[
+          Math.floor(Math.random() * remainingVocabularies.length)
+        ];
+      const correctMeaning = randomWord.meanings.turkishMeanings[0];
+      const incorrectMeanings = vocabularies
+        .filter(v => v.wordId !== randomWord.wordId)
+        .map(v => v.meanings.turkishMeanings[0]);
 
-    const shuffledOptions = shuffleArray([
-      correctMeaning,
-      ...incorrectMeanings.slice(0, 3),
-    ]);
+      const shuffledOptions = shuffleArray([
+        correctMeaning,
+        ...incorrectMeanings.slice(0, 3),
+      ]);
 
-    setCurrentWord(randomWord);
-    setOptions(shuffledOptions);
-    setSelectedOption(null);
-    setIsCorrect(null);
-    setShowHint(false);
-  }, []);
+      setCurrentWord(randomWord);
+      setOptions(shuffledOptions);
+      setSelectedOption(null);
+      setIsCorrect(null);
+      setShowHint(false);
+    },
+    [askedWords]
+  );
 
   useEffect(() => {
     const storedVocabularies = localStorage.getItem("vocabularies");
@@ -74,14 +94,31 @@ const MultipleChoice = () => {
   }, [setNewQuestion]);
 
   const handleOptionClick = (option: string) => {
+    console.log("Option clicked:", option);
     setSelectedOption(option);
     const correct = option === currentWord?.meanings.turkishMeanings[0];
     setIsCorrect(correct);
+    console.log("Is correct:", correct);
 
     if (correct) {
       setTimeout(() => {
+        setCorrectCount(prevCount => {
+          console.log("Updating correct count:", prevCount + 1);
+          return prevCount + 1;
+        });
+        setAskedWords(prevAskedWords => {
+          console.log(
+            "Updating asked words:",
+            prevAskedWords.add(currentWord!.wordId)
+          );
+          return new Set(prevAskedWords.add(currentWord!.wordId));
+        });
         setNewQuestion(vocabularies);
-      }, 1000); // Change question after 1 second
+      }, 2000); // Wait for 2 seconds before moving to the next question
+    } else {
+      setTimeout(() => {
+        setNewQuestion(vocabularies);
+      }, 3000); // Wait for 3 seconds before moving to the next question
     }
   };
 
@@ -91,6 +128,9 @@ const MultipleChoice = () => {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
+      <div className="text-2xl text-white mb-24">
+        Correct Answers: {correctCount}
+      </div>
       <div className="self-end mb-10">
         <Link href="/">
           <Button variant={"customSmIcon"}>
@@ -102,11 +142,6 @@ const MultipleChoice = () => {
         <CardHeader>
           <CardTitle className="text-center">{currentWord?.word}</CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-center">
-            Which Turkish meaning is the correct fit for this English word?
-          </p>
-        </CardContent>
         <CardFooter className="flex flex-col gap-4">
           <div className="flex gap-4 justify-center">
             {options.slice(0, 2).map(option => (
@@ -118,6 +153,9 @@ const MultipleChoice = () => {
                     ? isCorrect
                       ? "bg-custom-2"
                       : "bg-custom-7"
+                    : selectedOption !== null &&
+                      option === currentWord?.meanings.turkishMeanings[0]
+                    ? "bg-custom-2"
                     : showHint &&
                       option === currentWord?.meanings.turkishMeanings[0]
                     ? "bg-custom-2"
@@ -139,6 +177,9 @@ const MultipleChoice = () => {
                     ? isCorrect
                       ? "bg-custom-2"
                       : "bg-custom-7"
+                    : selectedOption !== null &&
+                      option === currentWord?.meanings.turkishMeanings[0]
+                    ? "bg-custom-2"
                     : showHint &&
                       option === currentWord?.meanings.turkishMeanings[0]
                     ? "bg-custom-2"
