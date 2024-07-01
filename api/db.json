@@ -1,0 +1,18 @@
+{
+  "vocabularies": [
+    {
+      "wordId": "1",
+      "word": "example",
+      "meanings": {
+        "isFirstMeaning": true,
+        "turkishMeanings": ["örnek"],
+        "sideNotes": ["sample note"]
+      },
+      "englishExpression": "This is an example.",
+      "exampleSentences": ["Here is an example sentence."],
+      "imageUrl": "https://example.com/image.jpg",
+      "type": "noun",
+      "tags": ["sample", "test"]
+    }
+  ]
+}

@@ -6,17 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FaHome } from "react-icons/fa";
 import { MdTipsAndUpdates } from "react-icons/md";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import axios from "axios";
 
 interface Vocabulary {
   wordId: string;
@@ -53,7 +43,6 @@ const MultipleChoice = () => {
 
   const setNewQuestion = useCallback(
     (vocabularies: Vocabulary[]) => {
-      console.log("Setting new question");
       const remainingVocabularies = vocabularies.filter(
         v => !askedWords.has(v.wordId)
       );
@@ -85,41 +74,37 @@ const MultipleChoice = () => {
   );
 
   useEffect(() => {
-    const storedVocabularies = localStorage.getItem("vocabularies");
-    if (storedVocabularies) {
-      const parsedVocabularies: Vocabulary[] = JSON.parse(storedVocabularies);
-      setVocabularies(parsedVocabularies);
-      setNewQuestion(parsedVocabularies);
-    }
+    const fetchVocabularies = async () => {
+      try {
+        const response = await axios.get("http://localhost:3001/vocabularies");
+        setVocabularies(response.data);
+        setNewQuestion(response.data);
+      } catch (error) {
+        console.error("Error fetching vocabularies:", error);
+      }
+    };
+
+    fetchVocabularies();
   }, [setNewQuestion]);
 
   const handleOptionClick = (option: string) => {
-    console.log("Option clicked:", option);
     setSelectedOption(option);
     const correct = option === currentWord?.meanings.turkishMeanings[0];
     setIsCorrect(correct);
-    console.log("Is correct:", correct);
 
     if (correct) {
-      setTimeout(() => {
-        setCorrectCount(prevCount => {
-          console.log("Updating correct count:", prevCount + 1);
-          return prevCount + 1;
-        });
-        setAskedWords(prevAskedWords => {
-          console.log(
-            "Updating asked words:",
-            prevAskedWords.add(currentWord!.wordId)
-          );
-          return new Set(prevAskedWords.add(currentWord!.wordId));
-        });
-        setNewQuestion(vocabularies);
-      }, 2000); // Wait for 2 seconds before moving to the next question
-    } else {
-      setTimeout(() => {
-        setNewQuestion(vocabularies);
-      }, 3000); // Wait for 3 seconds before moving to the next question
+      setCorrectCount(prevCount => prevCount + 1);
+      setAskedWords(
+        prevAskedWords => new Set(prevAskedWords.add(currentWord!.wordId))
+      );
     }
+
+    setTimeout(
+      () => {
+        setNewQuestion(vocabularies);
+      },
+      correct ? 2000 : 3000 // Display for 2 seconds if correct, 3 seconds if incorrect
+    );
   };
 
   const handleHintClick = () => {
