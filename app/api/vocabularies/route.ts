@@ -17,9 +17,10 @@ export async function GET() {
 
     return NextResponse.json(reorderedResponse, { status: 200 });
   } catch (error: any) {
-    return new NextResponse("Error in fetcing vocabularies" + error.message, {
-      status: 500,
-    });
+    return NextResponse.json(
+      { message: "Error in fetching vocabularies", error: error.message },
+      { status: 500 }
+    );
   }
 }
 
@@ -34,8 +35,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(newVocabulary, { status: 201 });
   } catch (error: any) {
-    return new NextResponse("Error in creating vocabulary" + error.message, {
-      status: 500,
-    });
+    return NextResponse.json(
+      { message: "Error in creating vocabulary", error: error.message },
+      { status: 500 }
+    );
   }
 }

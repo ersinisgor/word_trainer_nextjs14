@@ -1,21 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Vocabulary } from "../types/vocabulary";
 import { FaHome } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import axios from "axios";
 
 const NewWord = () => {
-  // Retrieve stored vocabularies from local storage, or initialize to an empty array
-  const [vocabularies, setVocabularies] = useState<Vocabulary[]>(() => {
-    if (typeof window !== "undefined") {
-      const savedVocabularies = localStorage.getItem("vocabularies");
-      return savedVocabularies ? JSON.parse(savedVocabularies) : [];
-    }
-    return [];
-  });
-
   const [vocabulary, setVocabulary] = useState<Omit<Vocabulary, "wordId">>({
     word: "",
     meanings: { isFirstMeaning: true, turkishMeanings: [], sideNotes: [] },
@@ -25,13 +17,6 @@ const NewWord = () => {
     type: "",
     tags: [],
   });
-
-  // Save vocabularies to local storage whenever vocabularies state changes
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("vocabularies", JSON.stringify(vocabularies));
-    }
-  }, [vocabularies]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -56,7 +41,7 @@ const NewWord = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (
@@ -70,24 +55,44 @@ const NewWord = () => {
       return;
     }
 
-    const newVocabulary: Vocabulary = {
-      ...vocabulary,
-      wordId: (vocabularies.length + 1).toString(),
+    const lowercaseVocabulary = {
+      word: vocabulary.word.toLowerCase(),
+      meanings: {
+        isFirstMeaning: vocabulary.meanings.isFirstMeaning,
+        turkishMeanings: vocabulary.meanings.turkishMeanings.map(str =>
+          str.toLowerCase()
+        ),
+        sideNotes: vocabulary.meanings.sideNotes.map(str => str.toLowerCase()),
+      },
+      englishExpression: vocabulary.englishExpression.toLowerCase(),
+      exampleSentences: vocabulary.exampleSentences.map(str =>
+        str.toLowerCase()
+      ),
+      imageUrl: vocabulary.imageUrl.toLowerCase(),
+      type: vocabulary.type.toLowerCase(),
+      tags: vocabulary.tags.map(str => str.toLowerCase()),
     };
-    setVocabularies(prev => [...prev, newVocabulary]);
 
-    console.log(newVocabulary);
+    try {
+      const response = await axios.post(
+        "/api/vocabularies",
+        lowercaseVocabulary
+      );
+      console.log("Vocabulary added:", response.data);
 
-    // Reset form after submission
-    setVocabulary({
-      word: "",
-      meanings: { isFirstMeaning: true, turkishMeanings: [], sideNotes: [] },
-      englishExpression: "",
-      exampleSentences: [],
-      imageUrl: "",
-      type: "",
-      tags: [],
-    });
+      // Reset form after submission
+      setVocabulary({
+        word: "",
+        meanings: { isFirstMeaning: true, turkishMeanings: [], sideNotes: [] },
+        englishExpression: "",
+        exampleSentences: [],
+        imageUrl: "",
+        type: "",
+        tags: [],
+      });
+    } catch (error) {
+      console.error("Error adding vocabulary:", error);
+    }
   };
 
   return (
