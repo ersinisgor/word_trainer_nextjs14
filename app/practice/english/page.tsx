@@ -1,16 +1,44 @@
 "use client";
 
-import { useState } from "react";
-import { vocabularies } from "../../data/vocabularies";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import Image from "next/image";
+import { Vocabulary } from "../../types/vocabulary";
 
 const PracticeWord = () => {
+  const [vocabularies, setVocabularies] = useState<Vocabulary[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const vocabulary = vocabularies[currentWordIndex];
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchVocabularies = async () => {
+      try {
+        const response = await axios.get("/api/vocabularies");
+        setVocabularies(response.data);
+        setLoading(false);
+      } catch (error) {
+        setError("Failed to fetch vocabularies");
+        setLoading(false);
+      }
+    };
+
+    fetchVocabularies();
+  }, []);
 
   const handleNextWord = () => {
     setCurrentWordIndex(prev => (prev + 1) % vocabularies.length);
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  const vocabulary = vocabularies[currentWordIndex];
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
@@ -20,6 +48,7 @@ const PracticeWord = () => {
         <div>{vocabulary.englishExpression}</div>
         <div>{vocabulary.meanings.turkishMeanings.join(", ")}</div>
         <div>{vocabulary.exampleSentences.join(" ")}</div>
+        {/* Uncomment the below lines if you want to display the image */}
         {/* <Image
           src={vocabulary.imageUrl}
           alt={vocabulary.word}

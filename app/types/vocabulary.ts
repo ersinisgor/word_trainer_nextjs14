@@ -1,6 +1,6 @@
 export interface Vocabulary {
+  _id: string;
   word: string;
-  wordId: string;
   meanings: {
     isFirstMeaning: boolean;
     turkishMeanings: string[];

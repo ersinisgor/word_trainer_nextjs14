@@ -8,7 +8,8 @@ import Link from "next/link";
 import axios from "axios";
 
 const NewWord = () => {
-  const [vocabulary, setVocabulary] = useState<Omit<Vocabulary, "wordId">>({
+  const [vocabulary, setVocabulary] = useState<Vocabulary>({
+    _id: "",
     word: "",
     meanings: { isFirstMeaning: true, turkishMeanings: [], sideNotes: [] },
     englishExpression: "",
@@ -82,6 +83,7 @@ const NewWord = () => {
 
       // Reset form after submission
       setVocabulary({
+        _id: "",
         word: "",
         meanings: { isFirstMeaning: true, turkishMeanings: [], sideNotes: [] },
         englishExpression: "",
