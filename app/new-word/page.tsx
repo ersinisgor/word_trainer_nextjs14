@@ -8,8 +8,7 @@ import Link from "next/link";
 import axios from "axios";
 
 const NewWord = () => {
-  const [vocabulary, setVocabulary] = useState<Vocabulary>({
-    _id: "",
+  const [vocabulary, setVocabulary] = useState<Omit<Vocabulary, "_id">>({
     word: "",
     meanings: { isFirstMeaning: true, turkishMeanings: [], sideNotes: [] },
     englishExpression: "",
@@ -49,8 +48,7 @@ const NewWord = () => {
       !vocabulary.word ||
       !vocabulary.meanings.turkishMeanings.length ||
       !vocabulary.englishExpression ||
-      !vocabulary.exampleSentences.length ||
-      !vocabulary.type
+      !vocabulary.exampleSentences.length
     ) {
       alert("Please fill in all the required fields marked with *.");
       return;
@@ -83,7 +81,6 @@ const NewWord = () => {
 
       // Reset form after submission
       setVocabulary({
-        _id: "",
         word: "",
         meanings: { isFirstMeaning: true, turkishMeanings: [], sideNotes: [] },
         englishExpression: "",
