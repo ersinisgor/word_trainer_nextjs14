@@ -1,4 +1,3 @@
-// app/api/vocabularies/route.ts
 import { NextResponse, NextRequest } from "next/server";
 import dbConnect from "../../../lib/dbConnect";
 import Vocabulary from "../../../lib/models/Vocabulary";
@@ -35,6 +34,15 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(newVocabulary, { status: 201 });
   } catch (error: any) {
+    if (error.code === 11000) {
+      return NextResponse.json(
+        {
+          message: "Error in creating vocabulary",
+          error: "Duplicate word entry",
+        },
+        { status: 400 }
+      );
+    }
     return NextResponse.json(
       { message: "Error in creating vocabulary", error: error.message },
       { status: 500 }

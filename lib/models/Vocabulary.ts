@@ -18,7 +18,7 @@ interface IVocabulary extends Document {
 // Create the Vocabulary schema
 const VocabularySchema = new Schema<IVocabulary>(
   {
-    word: { type: String, required: true },
+    word: { type: String, required: true, unique: true },
     meanings: {
       isFirstMeaning: Boolean,
       turkishMeanings: [String],

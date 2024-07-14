@@ -89,8 +89,15 @@ const NewWord = () => {
         type: "",
         tags: [],
       });
-    } catch (error) {
-      console.error("Error adding vocabulary:", error);
+    } catch (error: any) {
+      if (
+        error.response &&
+        error.response.data.error === "Duplicate word entry"
+      ) {
+        alert("This word already exists in the database.");
+      } else {
+        console.error("Error adding vocabulary:", error);
+      }
     }
   };
 
@@ -151,7 +158,7 @@ const NewWord = () => {
         <input
           type="text"
           name="type"
-          placeholder="Type *"
+          placeholder="Type"
           value={vocabulary.type}
           onChange={handleChange}
           className="w-full px-4 py-2 border rounded"
