@@ -62,9 +62,12 @@ const NewWord = () => {
 
   const generateClozeSentence = (sentence: string, hiddenWord: string) => {
     const underscore = "_".repeat(hiddenWord.length);
-    return sentence.replace(new RegExp(hiddenWord, "gi"), underscore);
+    const regex = new RegExp(`\\b${hiddenWord}\\b`, "gi"); // Ensure word boundaries are respected
+    const clozeSentence = sentence.replace(regex, underscore);
+    return clozeSentence.charAt(0).toUpperCase() + clozeSentence.slice(1);
   };
 
+  // In your handleSubmit function, don't convert sentences and hidden words to lowercase
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -78,8 +81,21 @@ const NewWord = () => {
       return;
     }
 
-    const lowercaseVocabulary = {
-      word: vocabulary.word.toLowerCase(),
+    for (const example of vocabulary.exampleSentences) {
+      if (
+        !example.originalSentence
+          .toLowerCase()
+          .includes(example.hiddenWord.toLowerCase())
+      ) {
+        alert(
+          `The hidden word "${example.hiddenWord}" does not exist in the example sentence "${example.originalSentence}". Please correct it.`
+        );
+        return;
+      }
+    }
+
+    const vocabularyData = {
+      ...vocabulary,
       meanings: {
         isFirstMeaning: vocabulary.meanings.isFirstMeaning,
         turkishMeanings: vocabulary.meanings.turkishMeanings.map(str =>
@@ -87,28 +103,22 @@ const NewWord = () => {
         ),
         sideNotes: vocabulary.meanings.sideNotes.map(str => str.toLowerCase()),
       },
-      englishExpression: vocabulary.englishExpression.toLowerCase(),
       exampleSentences: vocabulary.exampleSentences.map(example => ({
         ...example,
-        originalSentence: example.originalSentence.toLowerCase(),
         clozeSentence: generateClozeSentence(
-          example.originalSentence.toLowerCase(),
-          example.hiddenWord.toLowerCase()
+          example.originalSentence,
+          example.hiddenWord
         ),
-        hiddenWord: example.hiddenWord.toLowerCase(),
       })),
       imageUrl: vocabulary.imageUrl.toLowerCase(),
       type: vocabulary.type.toLowerCase(),
       tags: vocabulary.tags.map(str => str.toLowerCase()),
     };
 
-    console.log("Submitting vocabulary:", lowercaseVocabulary);
+    console.log("Submitting vocabulary:", vocabularyData);
 
     try {
-      const response = await axios.post(
-        "/api/vocabularies",
-        lowercaseVocabulary
-      );
+      const response = await axios.post("/api/vocabularies", vocabularyData);
       console.log("Vocabulary added:", response.data);
 
       // Reset form after submission
