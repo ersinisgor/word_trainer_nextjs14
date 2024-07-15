@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FaHome } from "react-icons/fa";
 import { MdTipsAndUpdates } from "react-icons/md";
+import axios from "axios";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,7 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 interface Vocabulary {
-  wordId: string;
+  _id: string;
   word: string;
   meanings: {
     isFirstMeaning: boolean;
@@ -27,7 +28,12 @@ interface Vocabulary {
     sideNotes: string[];
   };
   englishExpression: string;
-  exampleSentences: string[];
+  exampleSentences: {
+    originalSentence: string;
+    clozeSentence: string;
+    hiddenWord: string;
+    _id: string;
+  }[];
   imageUrl: string;
   type: string;
   tags: string[];
@@ -55,7 +61,7 @@ const MultipleChoice = () => {
     (vocabularies: Vocabulary[]) => {
       console.log("Setting new question");
       const remainingVocabularies = vocabularies.filter(
-        v => !askedWords.has(v.wordId)
+        v => !askedWords.has(v._id)
       );
       if (remainingVocabularies.length === 0) {
         alert("You've gone through all the words!");
@@ -67,7 +73,7 @@ const MultipleChoice = () => {
         ];
       const correctMeaning = randomWord.meanings.turkishMeanings[0];
       const incorrectMeanings = vocabularies
-        .filter(v => v.wordId !== randomWord.wordId)
+        .filter(v => v._id !== randomWord._id)
         .map(v => v.meanings.turkishMeanings[0]);
 
       const shuffledOptions = shuffleArray([
@@ -84,13 +90,35 @@ const MultipleChoice = () => {
     [askedWords]
   );
 
-  useEffect(() => {
-    const storedVocabularies = localStorage.getItem("vocabularies");
-    if (storedVocabularies) {
-      const parsedVocabularies: Vocabulary[] = JSON.parse(storedVocabularies);
-      setVocabularies(parsedVocabularies);
-      setNewQuestion(parsedVocabularies);
+  const fetchVocabularies = async () => {
+    try {
+      const response = await axios.get("/api/vocabularies");
+      if (response.status === 200) {
+        return response.data; // Assuming response.data is an array of vocabularies
+      } else {
+        throw new Error("Failed to fetch vocabularies");
+      }
+    } catch (error) {
+      console.error("Error fetching vocabularies:", error);
+      // Handle error (e.g., show error message, fallback UI)
+      return []; // Return empty array or handle error state as needed
     }
+  };
+
+  // Update useEffect to fetch vocabularies from API
+  useEffect(() => {
+    const fetchAndSetVocabularies = async () => {
+      try {
+        const fetchedVocabularies = await fetchVocabularies();
+        setVocabularies(fetchedVocabularies);
+        setNewQuestion(fetchedVocabularies);
+      } catch (error) {
+        console.error("Error fetching and setting vocabularies:", error);
+        // Handle error as needed (e.g., show error message)
+      }
+    };
+
+    fetchAndSetVocabularies();
   }, [setNewQuestion]);
 
   const handleOptionClick = (option: string) => {
@@ -109,9 +137,9 @@ const MultipleChoice = () => {
         setAskedWords(prevAskedWords => {
           console.log(
             "Updating asked words:",
-            prevAskedWords.add(currentWord!.wordId)
+            prevAskedWords.add(currentWord!._id)
           );
-          return new Set(prevAskedWords.add(currentWord!.wordId));
+          return new Set(prevAskedWords.add(currentWord!._id));
         });
         setNewQuestion(vocabularies);
       }, 2000); // Wait for 2 seconds before moving to the next question

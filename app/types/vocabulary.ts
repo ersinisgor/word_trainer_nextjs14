@@ -1,13 +1,17 @@
 export interface Vocabulary {
+  _id: string;
   word: string;
-  wordId: string;
   meanings: {
     isFirstMeaning: boolean;
     turkishMeanings: string[];
     sideNotes: string[];
   };
   englishExpression: string;
-  exampleSentences: string[];
+  exampleSentences: {
+    originalSentence: string;
+    clozeSentence: string;
+    hiddenWord: string;
+  }[];
   imageUrl: string;
   type: string;
   tags: string[];

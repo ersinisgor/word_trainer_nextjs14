@@ -1,26 +1,85 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { Vocabulary } from "../../types/vocabulary";
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { FaHome } from "react-icons/fa";
+import axios from "axios";
 
-const VocabularyDetail = ({ params }: { params: { wordId: string } }) => {
-  const { wordId } = params;
+const UpdateVocabulary = () => {
+  const router = useRouter();
+  const { id } = useParams();
   const [vocabulary, setVocabulary] = useState<Vocabulary | null>(null);
+  const [updatedVocabulary, setUpdatedVocabulary] = useState<
+    Omit<Vocabulary, "_id">
+  >({
+    word: "",
+    meanings: { isFirstMeaning: true, turkishMeanings: [], sideNotes: [] },
+    englishExpression: "",
+    exampleSentences: [],
+    imageUrl: "",
+    type: "",
+    tags: [],
+  });
 
   useEffect(() => {
-    if (!wordId) return; // Ensure wordId is available before proceeding
+    if (!id) return;
 
-    const storedVocabularies = localStorage.getItem("vocabularies");
-    if (storedVocabularies) {
-      const vocabularies: Vocabulary[] = JSON.parse(storedVocabularies);
-      const selectedVocabulary = vocabularies.find(v => v.wordId === wordId);
-      setVocabulary(selectedVocabulary || null);
+    const fetchVocabulary = async () => {
+      try {
+        const response = await axios.get(`/api/vocabularies/${id}`);
+        setVocabulary(response.data);
+        setUpdatedVocabulary({
+          word: response.data.word,
+          meanings: response.data.meanings,
+          englishExpression: response.data.englishExpression,
+          exampleSentences: response.data.exampleSentences,
+          imageUrl: response.data.imageUrl,
+          type: response.data.type,
+          tags: response.data.tags,
+        });
+      } catch (error) {
+        console.error("Failed to fetch vocabulary:", error);
+      }
+    };
+
+    fetchVocabulary();
+  }, [id]);
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setUpdatedVocabulary(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleMeaningsChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+    type: "turkishMeanings" | "sideNotes"
+  ) => {
+    const { value } = e.target;
+    setUpdatedVocabulary(prev => ({
+      ...prev,
+      meanings: {
+        ...prev.meanings,
+        [type]: value.split("/"),
+      },
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      await axios.put(`/api/vocabularies/${id}`, updatedVocabulary);
+      router.push("/vocabulary-list");
+    } catch (error) {
+      console.error("Failed to update vocabulary:", error);
     }
-  }, [wordId]);
+  };
 
   if (!vocabulary) {
     return (
@@ -44,54 +103,86 @@ const VocabularyDetail = ({ params }: { params: { wordId: string } }) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <h1 className="text-5xl font-bold mb-8 text-custom-2">
+    <div className="flex flex-col items-center justify-center min-h-screen py-2 my-2">
+      <h1 className="text-4xl font-bold mb-8 text-custom-2">
+        Update Vocabulary
+      </h1>
+      <h1 className="text-5xl font-bold mb-8 text-custom-7">
         {vocabulary.word}
       </h1>
-      <ul className="w-full max-w-md space-y-4">
-        <li className="p-4 border rounded">
-          <p className="text-xl text-custom-9">
-            Meanings: {vocabulary.meanings.turkishMeanings.join(" / ")}
-          </p>
-          <p className="text-xl text-custom-9">
-            Side Notes: {vocabulary.meanings.sideNotes.join(" / ")}
-          </p>
-          <p className="text-xl text-custom-9">
-            English Expression: {vocabulary.englishExpression}
-          </p>
-          <p className="text-xl text-custom-9">
-            Example Sentences: {vocabulary.exampleSentences.join(" / ")}
-          </p>
-          <p className="text-xl text-custom-9">Type: {vocabulary.type}</p>
-          <p className="text-xl text-custom-9">
-            Tags: {vocabulary.tags.join(" / ")}
-          </p>
-          {vocabulary.imageUrl && (
-            <Image
-              src={vocabulary.imageUrl}
-              alt={vocabulary.word}
-              width={500}
-              height={500}
-              className="mt-2"
-            />
-          )}
-        </li>
-      </ul>
-      <div className="flex space-x-4 mt-8">
-        <Link href="/vocabulary-list" passHref>
-          <Button variant={"customSm1"}>Back</Button>
-        </Link>
-        <Link href="/" passHref>
-          <Button variant={"customSm1"}>
-            <FaHome />
+      <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-md">
+        <textarea
+          name="turkishMeanings"
+          placeholder="Turkish Meanings (slash separated) *"
+          value={updatedVocabulary.meanings.turkishMeanings.join("/")}
+          onChange={e => handleMeaningsChange(e, "turkishMeanings")}
+          className="w-full px-4 py-2 border rounded"
+        />
+        <textarea
+          name="sideNotes"
+          placeholder="Side Notes (slash separated)"
+          value={updatedVocabulary.meanings.sideNotes.join("/")}
+          onChange={e => handleMeaningsChange(e, "sideNotes")}
+          className="w-full px-4 py-2 border rounded"
+        />
+        <textarea
+          name="englishExpression"
+          placeholder="English Expression *"
+          value={updatedVocabulary.englishExpression}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded"
+        />
+        <textarea
+          name="exampleSentences"
+          placeholder="Example Sentences (slash separated) *"
+          value={updatedVocabulary.exampleSentences.join("/")}
+          onChange={e =>
+            setUpdatedVocabulary(prev => ({
+              ...prev,
+              exampleSentences: e.target.value.split("/"),
+            }))
+          }
+          className="w-full px-4 py-2 border rounded"
+        />
+        <input
+          type="text"
+          name="imageUrl"
+          placeholder="Image URL"
+          value={updatedVocabulary.imageUrl}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded"
+        />
+        <input
+          type="text"
+          name="type"
+          placeholder="Type *"
+          value={updatedVocabulary.type}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded"
+        />
+        <textarea
+          name="tags"
+          placeholder="Tags (slash separated)"
+          value={updatedVocabulary.tags.join("/")}
+          onChange={e =>
+            setUpdatedVocabulary(prev => ({
+              ...prev,
+              tags: e.target.value.split("/"),
+            }))
+          }
+          className="w-full px-4 py-2 border rounded"
+        />
+        <div className="flex items-center justify-start gap-5">
+          <Button type="submit" variant={"customSm1"}>
+            Save
           </Button>
-        </Link>
-        <Link href={`/update-vocabulary/${vocabulary.wordId}`} passHref>
-          <Button variant={"customSm1"}>Edit</Button>
-        </Link>
-      </div>
+          <Link href={`/vocabulary-detail/${id}`} passHref>
+            <Button variant={"customSm1"}>Cancel</Button>
+          </Link>
+        </div>
+      </form>
     </div>
   );
 };
 
-export default VocabularyDetail;
+export default UpdateVocabulary;

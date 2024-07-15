@@ -25,7 +25,7 @@ const VocabularyList = () => {
       {vocabularies.length > 0 ? (
         <ul className="w-full max-w-md space-y-4">
           {vocabularies.map(vocabulary => (
-            <li key={vocabulary.wordId} className="p-4 border rounded">
+            <li key={vocabulary._id} className="p-4 border rounded">
               <h2 className="text-2xl font-bold">{vocabulary.word}</h2>
               <p>Meanings: {vocabulary.meanings.turkishMeanings.join(" / ")}</p>
               <p>Side Notes: {vocabulary.meanings.sideNotes.join(" / ")}</p>

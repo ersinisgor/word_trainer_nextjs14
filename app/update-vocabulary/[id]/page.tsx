@@ -5,13 +5,14 @@ import { useRouter, useParams } from "next/navigation";
 import { Vocabulary } from "../../types/vocabulary";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 
 const UpdateVocabulary = () => {
   const router = useRouter();
   const { wordId } = useParams();
   const [vocabulary, setVocabulary] = useState<Vocabulary | null>(null);
   const [updatedVocabulary, setUpdatedVocabulary] = useState<
-    Omit<Vocabulary, "wordId">
+    Omit<Vocabulary, "_id">
   >({
     word: "",
     meanings: { isFirstMeaning: true, turkishMeanings: [], sideNotes: [] },
@@ -23,17 +24,19 @@ const UpdateVocabulary = () => {
   });
 
   useEffect(() => {
-    if (!wordId) return; // Ensure wordId is available before proceeding
+    if (!wordId) return;
 
-    const storedVocabularies = localStorage.getItem("vocabularies");
-    if (storedVocabularies) {
-      const vocabularies: Vocabulary[] = JSON.parse(storedVocabularies);
-      const selectedVocabulary = vocabularies.find(v => v.wordId === wordId);
-      setVocabulary(selectedVocabulary || null);
-      if (selectedVocabulary) {
-        setUpdatedVocabulary(selectedVocabulary);
+    const fetchVocabulary = async () => {
+      try {
+        const response = await axios.get(`/api/vocabularies/${wordId}`);
+        setVocabulary(response.data);
+        setUpdatedVocabulary(response.data);
+      } catch (error) {
+        console.error("Failed to fetch vocabulary:", error);
       }
-    }
+    };
+
+    fetchVocabulary();
   }, [wordId]);
 
   const handleChange = (
@@ -59,17 +62,14 @@ const UpdateVocabulary = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const storedVocabularies = localStorage.getItem("vocabularies");
-    if (storedVocabularies) {
-      const vocabularies: Vocabulary[] = JSON.parse(storedVocabularies);
-      const updatedVocabularies = vocabularies.map(v =>
-        v.wordId === wordId ? { ...v, ...updatedVocabulary } : v
-      );
-      localStorage.setItem("vocabularies", JSON.stringify(updatedVocabularies));
+    try {
+      await axios.put(`/api/vocabularies/${wordId}`, updatedVocabulary);
       router.push("/vocabulary-list");
+    } catch (error) {
+      console.error("Failed to update vocabulary:", error);
     }
   };
 
@@ -168,7 +168,7 @@ const UpdateVocabulary = () => {
           <Button type="submit" variant={"customSm1"}>
             Save
           </Button>
-          <Link href={`/vocabulary-detail/${vocabulary.wordId}`} passHref>
+          <Link href={`/vocabulary-detail/${wordId}`} passHref>
             <Button variant={"customSm1"}>Cancel</Button>
           </Link>
         </div>
