@@ -9,8 +9,11 @@ interface IVocabulary extends Document {
     sideNotes: string[];
   };
   englishExpression: string;
-  exampleSentences: string[];
-  clozeSentences: { original: string; cloze: string }[];
+  exampleSentences: {
+    originalSentence: string;
+    clozeSentence: string;
+    hiddenWord: string;
+  }[];
   imageUrl?: string;
   type: string;
   tags: string[];
@@ -26,8 +29,13 @@ const VocabularySchema = new Schema<IVocabulary>(
       sideNotes: [String],
     },
     englishExpression: String,
-    exampleSentences: [String],
-    clozeSentences: [{ original: String, cloze: String }],
+    exampleSentences: [
+      {
+        originalSentence: { type: String, required: true },
+        clozeSentence: { type: String, required: true },
+        hiddenWord: { type: String, required: true },
+      },
+    ],
     imageUrl: String,
     type: String,
     tags: [String],
@@ -52,9 +60,10 @@ const capitalizeFirstLetter = (sentence: string) => {
 const sanitizeAndNormalizeArray = (arr: string[]) => arr.map(normalizeText);
 
 // Function to generate cloze-deleted sentence
-const generateClozeSentence = (word: string, sentence: string) => {
+const generateClozeSentence = (sentence: string, word: string) => {
   const underscore = "_".repeat(word.length);
-  return sentence.replace(new RegExp(word, "gi"), underscore);
+  const wordRegex = new RegExp(`\\b${word}\\b`, "gi");
+  return sentence.replace(wordRegex, underscore);
 };
 
 //new RegExp(word, "gi"):
@@ -82,15 +91,13 @@ VocabularySchema.pre("save", function (next) {
   this.englishExpression = capitalizeFirstLetter(
     normalizeText(this.englishExpression)
   );
-  this.exampleSentences = this.exampleSentences.map(sentence =>
-    capitalizeFirstLetter(normalizeText(sentence))
+  this.exampleSentences = this.exampleSentences.map(
+    ({ originalSentence, hiddenWord }) => ({
+      originalSentence: capitalizeFirstLetter(normalizeText(originalSentence)),
+      clozeSentence: generateClozeSentence(originalSentence, hiddenWord),
+      hiddenWord: cleanWhitespace(hiddenWord.toLowerCase()),
+    })
   );
-
-  const wordToStudy = this.word;
-  this.clozeSentences = this.exampleSentences.map(sentence => ({
-    original: sentence,
-    cloze: generateClozeSentence(wordToStudy, sentence),
-  }));
   this.imageUrl = this.imageUrl ? normalizeText(this.imageUrl) : "";
   this.type = cleanWhitespace(this.type.toLowerCase());
   this.tags = sanitizeAndNormalizeArray(this.tags);

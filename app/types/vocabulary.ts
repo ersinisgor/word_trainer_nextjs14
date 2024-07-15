@@ -7,7 +7,11 @@ export interface Vocabulary {
     sideNotes: string[];
   };
   englishExpression: string;
-  exampleSentences: string[];
+  exampleSentences: {
+    originalSentence: string;
+    clozeSentence: string;
+    hiddenWord: string;
+  }[];
   imageUrl: string;
   type: string;
   tags: string[];

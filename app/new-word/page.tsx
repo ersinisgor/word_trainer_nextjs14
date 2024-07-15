@@ -12,7 +12,11 @@ const NewWord = () => {
     word: "",
     meanings: { isFirstMeaning: true, turkishMeanings: [], sideNotes: [] },
     englishExpression: "",
-    exampleSentences: [],
+    exampleSentences: [
+      { originalSentence: "", hiddenWord: "", clozeSentence: "" },
+      { originalSentence: "", hiddenWord: "", clozeSentence: "" },
+      { originalSentence: "", hiddenWord: "", clozeSentence: "" },
+    ],
     imageUrl: "",
     type: "",
     tags: [],
@@ -41,6 +45,26 @@ const NewWord = () => {
     }));
   };
 
+  const handleExampleSentenceChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const { name, value } = e.target;
+    setVocabulary(prev => {
+      const updatedExampleSentences = [...prev.exampleSentences];
+      updatedExampleSentences[index] = {
+        ...updatedExampleSentences[index],
+        [name]: value,
+      };
+      return { ...prev, exampleSentences: updatedExampleSentences };
+    });
+  };
+
+  const generateClozeSentence = (sentence: string, hiddenWord: string) => {
+    const underscore = "_".repeat(hiddenWord.length);
+    return sentence.replace(new RegExp(hiddenWord, "gi"), underscore);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -64,13 +88,21 @@ const NewWord = () => {
         sideNotes: vocabulary.meanings.sideNotes.map(str => str.toLowerCase()),
       },
       englishExpression: vocabulary.englishExpression.toLowerCase(),
-      exampleSentences: vocabulary.exampleSentences.map(str =>
-        str.toLowerCase()
-      ),
+      exampleSentences: vocabulary.exampleSentences.map(example => ({
+        ...example,
+        originalSentence: example.originalSentence.toLowerCase(),
+        clozeSentence: generateClozeSentence(
+          example.originalSentence.toLowerCase(),
+          example.hiddenWord.toLowerCase()
+        ),
+        hiddenWord: example.hiddenWord.toLowerCase(),
+      })),
       imageUrl: vocabulary.imageUrl.toLowerCase(),
       type: vocabulary.type.toLowerCase(),
       tags: vocabulary.tags.map(str => str.toLowerCase()),
     };
+
+    console.log("Submitting vocabulary:", lowercaseVocabulary);
 
     try {
       const response = await axios.post(
@@ -84,7 +116,11 @@ const NewWord = () => {
         word: "",
         meanings: { isFirstMeaning: true, turkishMeanings: [], sideNotes: [] },
         englishExpression: "",
-        exampleSentences: [],
+        exampleSentences: [
+          { originalSentence: "", hiddenWord: "", clozeSentence: "" },
+          { originalSentence: "", hiddenWord: "", clozeSentence: "" },
+          { originalSentence: "", hiddenWord: "", clozeSentence: "" },
+        ],
         imageUrl: "",
         type: "",
         tags: [],
@@ -135,18 +171,26 @@ const NewWord = () => {
           onChange={handleChange}
           className="w-full px-4 py-2 border rounded"
         />
-        <textarea
-          name="exampleSentences"
-          placeholder="Example Sentences (slash separated) *"
-          value={vocabulary.exampleSentences.join("/")}
-          onChange={e =>
-            setVocabulary(prev => ({
-              ...prev,
-              exampleSentences: e.target.value.split("/"),
-            }))
-          }
-          className="w-full px-4 py-2 border rounded"
-        />
+        {vocabulary.exampleSentences.map((example, index) => (
+          <div key={index}>
+            <input
+              type="text"
+              name="originalSentence"
+              placeholder={`Example Sentence ${index + 1} *`}
+              value={example.originalSentence}
+              onChange={e => handleExampleSentenceChange(e, index)}
+              className="w-full px-4 py-2 border rounded"
+            />
+            <input
+              type="text"
+              name="hiddenWord"
+              placeholder={`Hidden Word ${index + 1} *`}
+              value={example.hiddenWord}
+              onChange={e => handleExampleSentenceChange(e, index)}
+              className="w-full px-4 py-2 border rounded mt-2"
+            />
+          </div>
+        ))}
         <input
           type="text"
           name="imageUrl"
