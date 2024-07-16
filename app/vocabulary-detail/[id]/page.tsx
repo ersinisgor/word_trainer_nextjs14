@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { Vocabulary } from "../../types/vocabulary";
+import { Vocabulary, ExampleSentence } from "../../types/vocabulary";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
@@ -70,6 +70,32 @@ const UpdateVocabulary = () => {
     }));
   };
 
+  const handleExampleSentencesChange = (
+    index: number,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = e.target;
+    const updatedSentences = [...updatedVocabulary.exampleSentences];
+    updatedSentences[index] = {
+      ...updatedSentences[index],
+      [name]: value,
+    };
+    setUpdatedVocabulary(prev => ({
+      ...prev,
+      exampleSentences: updatedSentences,
+    }));
+  };
+
+  const addExampleSentence = () => {
+    setUpdatedVocabulary(prev => ({
+      ...prev,
+      exampleSentences: [
+        ...prev.exampleSentences,
+        { originalSentence: "", clozeSentence: "", hiddenWord: "" },
+      ],
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -132,18 +158,43 @@ const UpdateVocabulary = () => {
           onChange={handleChange}
           className="w-full px-4 py-2 border rounded"
         />
-        <textarea
-          name="exampleSentences"
-          placeholder="Example Sentences (slash separated) *"
-          value={updatedVocabulary.exampleSentences.join("/")}
-          onChange={e =>
-            setUpdatedVocabulary(prev => ({
-              ...prev,
-              exampleSentences: e.target.value.split("/"),
-            }))
-          }
-          className="w-full px-4 py-2 border rounded"
-        />
+        <div className="space-y-2">
+          {updatedVocabulary.exampleSentences.map((sentence, index) => (
+            <div key={index} className="space-y-2">
+              <input
+                type="text"
+                name="originalSentence"
+                placeholder="Original Sentence"
+                value={sentence.originalSentence}
+                onChange={e => handleExampleSentencesChange(index, e)}
+                className="w-full px-4 py-2 border rounded"
+              />
+              <input
+                type="text"
+                name="clozeSentence"
+                placeholder="Cloze Sentence"
+                value={sentence.clozeSentence}
+                onChange={e => handleExampleSentencesChange(index, e)}
+                className="w-full px-4 py-2 border rounded"
+              />
+              <input
+                type="text"
+                name="hiddenWord"
+                placeholder="Hidden Word"
+                value={sentence.hiddenWord}
+                onChange={e => handleExampleSentencesChange(index, e)}
+                className="w-full px-4 py-2 border rounded"
+              />
+            </div>
+          ))}
+          <Button
+            type="button"
+            onClick={addExampleSentence}
+            variant={"customSm1"}
+          >
+            Add Example Sentence
+          </Button>
+        </div>
         <input
           type="text"
           name="imageUrl"
