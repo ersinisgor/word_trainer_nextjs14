@@ -15,6 +15,7 @@ const VocabularyDetailPage = () => {
 
   useEffect(() => {
     if (id) {
+      console.log("ID from useParams:", id); // Add this line for debugging
       const vocabId = Array.isArray(id) ? id[0] : id;
       fetchVocabulary(vocabId);
     }
@@ -23,6 +24,7 @@ const VocabularyDetailPage = () => {
   const fetchVocabulary = async (vocabId: string) => {
     try {
       const response = await axios.get(`/api/vocabularies/${vocabId}`);
+      console.log("API response:", response.data); // Add this line for debugging
       setVocabulary(response.data);
     } catch (error) {
       console.error("Failed to fetch vocabulary:", error);
