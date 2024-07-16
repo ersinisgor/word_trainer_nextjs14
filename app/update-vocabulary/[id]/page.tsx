@@ -1,3 +1,5 @@
+"use client";
+
 // /app/update-vocabulary/[id]/page.tsx
 
 import { useEffect, useState } from "react";

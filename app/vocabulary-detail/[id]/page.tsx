@@ -2,25 +2,21 @@
 
 // /app/vocabulary-detail/[id]/page.tsx
 
-import { useRouter, NextRouter } from "next/router";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Vocabulary, ExampleSentence } from "../../types/vocabulary";
+import { Vocabulary } from "../../types/vocabulary";
 import { VocabularyDetailHeader } from "../../../components/vocabulary-detail/VocabularyDetailHeader";
 import Link from "next/link";
 
-interface VocabularyDetailProps {
-  id: string;
-}
-
 const VocabularyDetailPage = () => {
-  const router = useRouter();
-  const { id } = router.query;
+  const { id } = useParams();
   const [vocabulary, setVocabulary] = useState<Vocabulary | null>(null);
 
   useEffect(() => {
     if (id) {
-      fetchVocabulary(id as string);
+      const vocabId = Array.isArray(id) ? id[0] : id;
+      fetchVocabulary(vocabId);
     }
   }, [id]);
 
