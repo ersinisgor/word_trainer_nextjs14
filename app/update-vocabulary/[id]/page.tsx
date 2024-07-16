@@ -17,7 +17,7 @@ const UpdateVocabulary = () => {
     word: "",
     meanings: { isFirstMeaning: true, turkishMeanings: [], sideNotes: [] },
     englishExpression: "",
-    exampleSentences: [],
+    exampleSentences: [], // Ensure this is correctly typed
     imageUrl: "",
     type: "",
     tags: [],
@@ -42,7 +42,7 @@ const UpdateVocabulary = () => {
 
   const handleChange = (
     e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+      HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement
     >
   ) => {
     const { name, value } = e.target;
@@ -63,19 +63,19 @@ const UpdateVocabulary = () => {
     }));
   };
 
-  const handleExampleSentencesChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>
+  const handleExampleSentenceChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
   ) => {
-    const sentences = e.target.value.split("/").map(sentence => ({
-      originalSentence: sentence,
-      clozeSentence: "", // Adjust as needed
-      hiddenWord: "", // Adjust as needed
-    }));
-
-    setUpdatedVocabulary(prev => ({
-      ...prev,
-      exampleSentences: sentences,
-    }));
+    const { name, value } = e.target;
+    setUpdatedVocabulary(prev => {
+      const updatedExampleSentences = [...prev.exampleSentences];
+      updatedExampleSentences[index] = {
+        ...updatedExampleSentences[index],
+        [name]: value,
+      };
+      return { ...prev, exampleSentences: updatedExampleSentences };
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -140,15 +140,36 @@ const UpdateVocabulary = () => {
           onChange={handleChange}
           className="w-full px-4 py-2 border rounded"
         />
-        <textarea
-          name="exampleSentences"
-          placeholder="Example Sentences (slash separated) *"
-          value={updatedVocabulary.exampleSentences
-            .map(s => s.originalSentence)
-            .join("/")}
-          onChange={handleExampleSentencesChange}
-          className="w-full px-4 py-2 border rounded"
-        />
+
+        {updatedVocabulary.exampleSentences.map((example, index) => (
+          <div key={index}>
+            <input
+              type="text"
+              name="originalSentence"
+              placeholder="Original Sentence"
+              value={example.originalSentence}
+              onChange={e => handleExampleSentenceChange(e, index)}
+              className="w-full px-4 py-2 border rounded"
+            />
+            <input
+              type="text"
+              name="clozeSentence"
+              placeholder="Cloze Sentence"
+              value={example.clozeSentence}
+              onChange={e => handleExampleSentenceChange(e, index)}
+              className="w-full px-4 py-2 border rounded"
+            />
+            <input
+              type="text"
+              name="hiddenWord"
+              placeholder="Hidden Word"
+              value={example.hiddenWord}
+              onChange={e => handleExampleSentenceChange(e, index)}
+              className="w-full px-4 py-2 border rounded"
+            />
+          </div>
+        ))}
+
         <input
           type="text"
           name="imageUrl"
