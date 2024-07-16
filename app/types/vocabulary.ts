@@ -1,3 +1,9 @@
+export interface ExampleSentence {
+  originalSentence: string;
+  clozeSentence: string;
+  hiddenWord: string;
+}
+
 export interface Vocabulary {
   _id: string;
   word: string;
@@ -7,11 +13,7 @@ export interface Vocabulary {
     sideNotes: string[];
   };
   englishExpression: string;
-  exampleSentences: {
-    originalSentence: string;
-    clozeSentence: string;
-    hiddenWord: string;
-  }[];
+  exampleSentences: ExampleSentence[];
   imageUrl: string;
   type: string;
   tags: string[];

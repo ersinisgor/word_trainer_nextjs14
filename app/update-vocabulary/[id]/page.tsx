@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { Vocabulary } from "../../types/vocabulary";
+import { Vocabulary, ExampleSentence } from "../../types/vocabulary";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 
 const UpdateVocabulary = () => {
   const router = useRouter();
-  const { wordId } = useParams();
+  const { id } = useParams();
   const [vocabulary, setVocabulary] = useState<Vocabulary | null>(null);
   const [updatedVocabulary, setUpdatedVocabulary] = useState<
     Omit<Vocabulary, "_id">
@@ -24,20 +24,21 @@ const UpdateVocabulary = () => {
   });
 
   useEffect(() => {
-    if (!wordId) return;
+    if (!id) return;
 
     const fetchVocabulary = async () => {
       try {
-        const response = await axios.get(`/api/vocabularies/${wordId}`);
+        const response = await axios.get(`/api/vocabularies/${id}`);
         setVocabulary(response.data);
-        setUpdatedVocabulary(response.data);
+        const { _id, ...rest } = response.data;
+        setUpdatedVocabulary(rest);
       } catch (error) {
         console.error("Failed to fetch vocabulary:", error);
       }
     };
 
     fetchVocabulary();
-  }, [wordId]);
+  }, [id]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -62,11 +63,26 @@ const UpdateVocabulary = () => {
     }));
   };
 
+  const handleExampleSentencesChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    const sentences = e.target.value.split("/").map(sentence => ({
+      originalSentence: sentence,
+      clozeSentence: "", // Adjust as needed
+      hiddenWord: "", // Adjust as needed
+    }));
+
+    setUpdatedVocabulary(prev => ({
+      ...prev,
+      exampleSentences: sentences,
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      await axios.put(`/api/vocabularies/${wordId}`, updatedVocabulary);
+      await axios.put(`/api/vocabularies/${id}`, updatedVocabulary);
       router.push("/vocabulary-list");
     } catch (error) {
       console.error("Failed to update vocabulary:", error);
@@ -127,13 +143,10 @@ const UpdateVocabulary = () => {
         <textarea
           name="exampleSentences"
           placeholder="Example Sentences (slash separated) *"
-          value={updatedVocabulary.exampleSentences.join("/")}
-          onChange={e =>
-            setUpdatedVocabulary(prev => ({
-              ...prev,
-              exampleSentences: e.target.value.split("/"),
-            }))
-          }
+          value={updatedVocabulary.exampleSentences
+            .map(s => s.originalSentence)
+            .join("/")}
+          onChange={handleExampleSentencesChange}
           className="w-full px-4 py-2 border rounded"
         />
         <input
@@ -168,7 +181,7 @@ const UpdateVocabulary = () => {
           <Button type="submit" variant={"customSm1"}>
             Save
           </Button>
-          <Link href={`/vocabulary-detail/${wordId}`} passHref>
+          <Link href={`/vocabulary-detail/${id}`} passHref>
             <Button variant={"customSm1"}>Cancel</Button>
           </Link>
         </div>
